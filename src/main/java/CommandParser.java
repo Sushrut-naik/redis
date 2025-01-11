@@ -38,7 +38,8 @@ public class CommandParser implements Runnable {
                         i++;
                     }
                 }
-                System.out.println("Command Breakup: " + commandBreakup);
+//                System.out.println("Command Breakup: " + commandBreakup);
+                System.out.println("This is the personal repo\n");
                 String commandName = commandBreakup.get(0);
                 CommandExecutor cmdExe = CommandExecutorFactory.getCommandExecutor(commandName);
 

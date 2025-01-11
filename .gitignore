@@ -1,0 +1,12 @@
+# Ignore build outputs
+target/
+*.class
+*.jar
+
+# Maven-related files
+.mvn/
+target/
+
+# Other system files
+.DS_Store
+Thumbs.db
