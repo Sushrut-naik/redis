@@ -38,22 +38,12 @@ public class CommandParser implements Runnable {
                         i++;
                     }
                 }
-//                System.out.println("Command Breakup: " + commandBreakup);
+
                 System.out.println("This is the personal repo\n");
                 String commandName = commandBreakup.get(0);
                 CommandExecutor cmdExe = CommandExecutorFactory.getCommandExecutor(commandName);
 
                 opStream.write(cmdExe.execute(commandBreakup).getBytes());
-//                if (command.equals("*1\r\n$4\r\nPING\r\n")) {
-//                    System.out.println("PING matched\n");
-//                    opStream.write("+PONG\r\n".getBytes());
-//                } else if (command == "EXIT") {
-//                    opStream.write("+BYE\r\n".getBytes());
-//                    break; // Exit loop to close connection
-//                } else {
-//                    opStream.write("-ERR Unknown command\r\n".getBytes());
-//                }
-
                 data = new byte[1024];
             }
         }

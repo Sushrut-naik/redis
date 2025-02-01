@@ -5,6 +5,10 @@ public class CommandExecutorFactory {
                 return new Ping();
             case "echo":
                 return new Echo();
+            case "get":
+                return new Get();
+            case "set":
+                return new Set();
             default:
                 return new InvalidCommand();
         }
