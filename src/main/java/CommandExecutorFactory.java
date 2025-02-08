@@ -9,6 +9,8 @@ public class CommandExecutorFactory {
                 return new Get();
             case "set":
                 return new Set();
+            case "config":
+                return new ConfigGet();
             default:
                 return new InvalidCommand();
         }
