@@ -1,63 +1,60 @@
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.*;
-import java.net.Socket;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.SocketChannel;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.List;
 
-public class CommandParser implements Runnable {
-    private Socket clientSocket;
-    public CommandParser(Socket clientSocket) {
-        this.clientSocket = clientSocket;
+public class CommandParser {
+    private final SocketChannel client;
+    private final ByteBuffer buffer = ByteBuffer.allocate(1024);
+    private final StringBuilder commandBuffer = new StringBuilder();
+
+    public CommandParser(SocketChannel client) {
+        this.client = client;
     }
-    @Override
-    public void run() {
-        try {
-            InputStream inStream = clientSocket.getInputStream();
-            OutputStream opStream = clientSocket.getOutputStream();
 
-            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-            byte[] data = new byte[1024]; // Temporary buffer
-            int bytesRead;
+    public void processCommand() throws IOException {
+        buffer.clear();
+        int bytesRead = client.read(buffer);
 
-            // Listen and respond to multiple requests
-            while ((bytesRead = inStream.read(data)) != -1) {
+        if (bytesRead == -1) { // Client disconnected
+            client.close();
+            return;
+        }
 
-                String command = new String(data, 0, bytesRead, "UTF-8");
+        buffer.flip();
+        commandBuffer.append(StandardCharsets.UTF_8.decode(buffer));
 
-                // Process the request
-                System.out.println("Accumulated command: [" + command + "]");
-                String[] commandSplit = command.split("\r\n");
-                ArrayList<String> commandBreakup = new ArrayList<String>(commandSplit[0].charAt(1));
+        // Check if a full command is received
+        if (commandBuffer.toString().endsWith("\r\n")) {
+            String command = commandBuffer.toString().trim();
+            commandBuffer.setLength(0); // Reset buffer
 
-                for(int i=2; i<commandSplit.length; i++){
-                    commandBreakup.add(commandSplit[i]);
-                    if(i != commandSplit.length-1){
-                        i++;
-                    }
-                }
+            System.out.println("Received command: [" + command + "]");
+            ArrayList<String> commandParts = parseRESP(command);
 
-                System.out.println("This is the personal repo\n");
-                String commandName = commandBreakup.get(0);
+            if (!commandParts.isEmpty()) {
+                String commandName = commandParts.get(0);
                 CommandExecutor cmdExe = CommandExecutorFactory.getCommandExecutor(commandName);
+                String response = cmdExe.execute(commandParts);
 
-                opStream.write(cmdExe.execute(commandBreakup).getBytes());
-                data = new byte[1024];
+                sendResponse(response);
             }
         }
-        catch (IOException e) {
-            System.out.println("IOException: " + e.getMessage());
+    }
+
+    private ArrayList<String> parseRESP(String command) {
+        String[] commandSplit = command.split("\r\n");
+        ArrayList<String> commandBreakup = new ArrayList<>();
+
+        for (int i = 2; i < commandSplit.length; i += 2) { // Skip the array length and every other metadata
+            commandBreakup.add(commandSplit[i]);
         }
-        finally {
-            try {
-                if (clientSocket != null) {
-                    clientSocket.close();
-                }
-            } catch (IOException e) {
-                System.out.println("IOException: " + e.getMessage());
-            }
-        }
+        return commandBreakup;
+    }
+
+    private void sendResponse(String response) throws IOException {
+        ByteBuffer responseBuffer = ByteBuffer.wrap(response.getBytes(StandardCharsets.UTF_8));
+        client.write(responseBuffer);
     }
 }
