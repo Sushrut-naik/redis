@@ -1,4 +1,4 @@
-# Set this to true if you want debug logs.
+# commands.Set this to true if you want debug logs.
 #
 # These can be VERY verbose, so we suggest turning them off
 # unless you really need them.
