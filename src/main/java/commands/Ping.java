@@ -1,8 +1,10 @@
 package commands;
 
+import utils.CommandExecutor;
+
 import java.util.ArrayList;
 
-public class Ping implements CommandExecutor{
+public class Ping implements CommandExecutor {
     @Override
     public String execute(ArrayList command) {
         if(command.size() == 1)

@@ -1,12 +1,13 @@
 package commands;
 
+import utils.CommandExecutor;
 import utils.DataStore;
 import utils.Pair;
 
 import java.util.ArrayList;
 import java.util.Map;
 
-public class Get implements CommandExecutor{
+public class Get implements CommandExecutor {
     @Override
     public String execute(ArrayList command) {
         String key = command.get(1).toString();

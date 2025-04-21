@@ -1,12 +1,13 @@
 package commands;
 
+import utils.CommandExecutor;
 import utils.DataStore;
 import utils.Pair;
 
 import java.util.ArrayList;
 import java.util.Map;
 
-public class Set implements CommandExecutor{
+public class Set implements CommandExecutor {
     @Override
     public String execute(ArrayList command) {
         if(command.size() == 3){

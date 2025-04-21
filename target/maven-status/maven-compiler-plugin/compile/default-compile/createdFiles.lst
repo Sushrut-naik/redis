@@ -1,3 +1,4 @@
+utils/CommandExecutor.class
 commands/ConfigGet.class
 utils/Pair.class
 commands/Echo.class
@@ -7,9 +8,10 @@ utils/GlobalVars.class
 commands/Get.class
 utils/CommandExecutorFactory.class
 commands/Set.class
-commands/CommandExecutor.class
 app/Main.class
+utils/Role.class
 commands/InvalidCommand.class
 utils/DataStore.class
 commands/Keys.class
+commands/Info.class
 utils/PersistenceHandler.class

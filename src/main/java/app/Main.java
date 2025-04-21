@@ -8,6 +8,7 @@ import java.util.Iterator;
 import utils.CommandParser;
 import utils.GlobalVars;
 import utils.PersistenceHandler;
+import utils.Role;
 
 public class Main {
     private static final int PORT = 6379;
@@ -15,13 +16,17 @@ public class Main {
     private ServerSocketChannel serverChannel;
 
     public static void main(String[] args) throws IOException {
-        parseArgs(args);
+        try{
+            parseArgs(args);
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
         PersistenceHandler handler = new PersistenceHandler();
         handler.parseRDBFile();
         Main server = new Main();
         try {
             server.start();
-        } catch (IOException e) {
+        }catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -30,9 +35,9 @@ public class Main {
         selector = Selector.open();
         serverChannel = ServerSocketChannel.open();
         serverChannel.configureBlocking(false);
-        serverChannel.bind(new InetSocketAddress(PORT));
+        serverChannel.bind(new InetSocketAddress(GlobalVars.PORT));
         serverChannel.register(selector, SelectionKey.OP_ACCEPT);
-        System.out.println("Server started on port " + PORT);
+        System.out.println("Server started on port " + GlobalVars.PORT);
     }
 
     public void start() throws IOException {
@@ -65,12 +70,26 @@ public class Main {
         parser.processCommand();
     }
 
-    private static void parseArgs(String[] args) {
+    private static void parseArgs(String[] args) throws IOException {
         for (int i = 0; i < args.length - 1; i++) {
             if (args[i].equals("--dir")) {
-                GlobalVars.dir = args[i + 1];
-            } else if (args[i].equals("--dbfilename")) {
-                GlobalVars.dbFilename = args[i + 1];
+                GlobalVars.DIR = args[i + 1];
+            }
+            else if (args[i].equals("--dbfilename")) {
+                GlobalVars.DBFILENAME = args[i + 1];
+            }
+            else if(args[i].equals("--port")){
+                GlobalVars.PORT = Integer.parseInt(args[i+1]);
+            }
+            else if(args[i].equals("--replicaof")){
+                String replication_info = args[i+1];
+                String[] info = replication_info.split(" ");
+                if(info.length != 2){
+                    throw new IOException("Invalid arguments to --replicaof flag");
+                }
+                GlobalVars.MASTER_HOST = info[0];
+                GlobalVars.MASTER_PORT = Integer.parseInt(info[1]);
+                GlobalVars.ROLE = Role.slave;
             }
         }
     }

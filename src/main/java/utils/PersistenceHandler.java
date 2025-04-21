@@ -8,7 +8,7 @@ import java.util.Map;
 public class PersistenceHandler {
 
     public void parseRDBFile() {
-        String filePath = GlobalVars.dir + File.separator + GlobalVars.dbFilename;
+        String filePath = GlobalVars.DIR + File.separator + GlobalVars.DBFILENAME;
         int numElements = 0, numElementsWithExpiry = 0;
         Map<String, Pair> dataStore = DataStore.getDataStore();
         boolean parsingKeys = false;

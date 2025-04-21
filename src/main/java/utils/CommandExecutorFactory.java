@@ -17,6 +17,8 @@ public class CommandExecutorFactory {
                 return new ConfigGet();
             case "keys":
                 return new Keys();
+            case "info":
+                return new Info();
             default:
                 return new InvalidCommand();
         }

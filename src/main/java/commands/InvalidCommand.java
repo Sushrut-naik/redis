@@ -1,5 +1,7 @@
 package commands;
 
+import utils.CommandExecutor;
+
 import java.util.ArrayList;
 
 public class InvalidCommand implements CommandExecutor {
